@@ -26,6 +26,10 @@ class User
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
+    #[ORM\ManyToOne(inversedBy: 'users')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Customer $Customer = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -75,6 +79,18 @@ class User
     public function setPassword(string $password): self
     {
         $this->password = $password;
+
+        return $this;
+    }
+
+    public function getCustomer(): ?Customer
+    {
+        return $this->Customer;
+    }
+
+    public function setCustomer(?Customer $Customer): self
+    {
+        $this->Customer = $Customer;
 
         return $this;
     }
