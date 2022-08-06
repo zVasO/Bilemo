@@ -10,12 +10,14 @@
         "doctrine/doctrine-bundle": "^2.7",
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.12",
+        "lexik/jwt-authentication-bundle": "^2.16",
         "symfony/console": "6.1.*",
         "symfony/dotenv": "6.1.*",
         "symfony/flex": "^2",
         "symfony/framework-bundle": "6.1.*",
         "symfony/proxy-manager-bridge": "6.1.*",
         "symfony/runtime": "6.1.*",
+        "symfony/security-bundle": "6.1.*",
         "symfony/yaml": "6.1.*"
     },
     "require-dev": {
