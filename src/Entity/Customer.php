@@ -18,7 +18,7 @@ class Customer
     #[ORM\Column(length: 255)]
     private ?string $fullAddress = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: true)]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]

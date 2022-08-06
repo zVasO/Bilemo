@@ -21,7 +21,7 @@ class AppFixtures extends Fixture
         $manager->persist($customer);
 
         $firstUser = new User();
-        $firstUser->setEmail("firstuser@bilemo.fr")
+        $firstUser->setUsername("firstUser")
             ->setPassword("password")
             ->setFirstName("Tom")
             ->setLastName("Cruise")
@@ -30,7 +30,7 @@ class AppFixtures extends Fixture
 
 
         $secondUser = new User();
-        $secondUser->setEmail("seconduser@bilemo.fr")
+        $secondUser->setUsername("secondUser")
             ->setPassword("password")
             ->setFirstName("Test")
             ->setLastName("Second")

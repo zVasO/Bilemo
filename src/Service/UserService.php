@@ -49,7 +49,7 @@ class UserService
     public function createUser(array $userInformation): void
     {
         $newUser = new User();
-        $newUser->setEmail($userInformation["email"])
+        $newUser->setUsername($userInformation["email"])
             ->setPassword($userInformation["password"])
             ->setFirstName($userInformation["firstname"])
             ->setLastName($userInformation["lastname"])
