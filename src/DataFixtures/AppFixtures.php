@@ -7,34 +7,42 @@ use App\Entity\Product;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
+
+
+    public function __construct(private readonly UserPasswordHasherInterface $passwordHasher)
+    {
+    }
+
     public function load(ObjectManager $manager): void
     {
         // $product = new Product();
         // $manager->persist($product);
         $customer = new Customer();
-        $customer->setPassword("motdepasse")
-            ->setEmail("dev.dyger@gmail.com")
+        $customer->setEmail("dev.dyger@gmail.com")
             ->setFullAddress("3 rue du test 01100 Oyonnax");
         $manager->persist($customer);
 
         $firstUser = new User();
-        $firstUser->setUsername("firstUser")
-            ->setPassword("password")
+        $firstUser->setEmail("dev.dyger@gmail.com")
+            ->setPassword($this->passwordHasher->hashPassword($firstUser, "motdepasse"))
             ->setFirstName("Tom")
             ->setLastName("Cruise")
-            ->setCustomer($customer);
+            ->setCustomer($customer)
+            ->setRoles(['ROLE_USER', 'ROLE_MANAGER']);
         $manager->persist($firstUser);
 
 
         $secondUser = new User();
-        $secondUser->setUsername("secondUser")
-            ->setPassword("password")
+        $secondUser->setEmail("defv.dyger@gmail.com")
+            ->setPassword($this->passwordHasher->hashPassword($secondUser, "motdepasse"))
             ->setFirstName("Test")
             ->setLastName("Second")
-            ->setCustomer($customer);
+            ->setCustomer($customer)
+            ->setRoles(['ROLE_USER']);
         $manager->persist($secondUser);
 
 
