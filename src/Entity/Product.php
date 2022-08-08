@@ -5,7 +5,7 @@ namespace App\Entity;
 use App\Repository\ProductRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 class Product
@@ -21,31 +21,31 @@ class Product
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["productList", "productDetails"])]
+    #[Groups(["productDetails"])]
     private ?string $brand = null;
 
     #[ORM\Column]
-    #[Groups(["productList", "productDetails"])]
+    #[Groups(["productDetails"])]
     private ?float $screenSize = null;
 
     #[ORM\Column]
-    #[Groups(["productList", "productDetails"])]
+    #[Groups(["productDetails"])]
     private ?int $ram = null;
 
     #[ORM\Column]
-    #[Groups(["productList", "productDetails"])]
+    #[Groups(["productDetails"])]
     private ?int $storage = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["productList", "productDetails"])]
+    #[Groups(["productDetails"])]
     private ?string $color = null;
 
     #[ORM\Column]
-    #[Groups(["productList"])]
+    #[Groups(["productDetails"])]
     private ?float $price = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(["productList"])]
+    #[Groups(["productDetails"])]
     private ?string $description = null;
 
     public function getId(): ?int

@@ -4,9 +4,9 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -14,7 +14,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column (unique: true)]
-    #[Groups(["userList"])]
+    #[Groups(["userList", "customerDetails"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
@@ -22,19 +22,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $email = null;
 
     #[ORM\Column]
-    #[Groups(["userList", "userDetails"])]
+    #[Groups(["userDetails"])]
     private array $roles = [];
 
     #[ORM\Column(length: 255)]
-    #[Groups(["userList", "userDetails"])]
+    #[Groups(["userDetails"])]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["userList", "userDetails"])]
+    #[Groups(["userDetails"])]
     private ?string $lastName = null;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(["userDetails"])]
     private ?Customer $Customer = null;
     /**
      * @var string|null The hashed password

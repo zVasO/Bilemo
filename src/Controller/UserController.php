@@ -6,12 +6,13 @@ use App\Entity\User;
 use App\Service\UserService;
 use App\Service\ValidatorService;
 use Exception;
+use JMS\Serializer\SerializationContext;
+use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\SerializerInterface;
 
 class UserController extends AbstractController
 {
@@ -26,7 +27,8 @@ class UserController extends AbstractController
     {
         try {
             $users = $this->userService->getAllUser();
-            $jsonUsers = $this->serializer->serialize($users, 'json', ["groups" => "userList"]);
+            $context = SerializationContext::create()->setGroups(["userList"]);
+            $jsonUsers = $this->serializer->serialize($users, 'json', $context);
             return new JsonResponse($jsonUsers, Response::HTTP_OK, [], true);
         } catch (Exception $exception) {
             return new JsonResponse($exception->getMessage(), $exception->getCode(), []);
@@ -38,7 +40,8 @@ class UserController extends AbstractController
     {
         try {
             $user = $this->userService->getUserDetail($id);
-            $jsonUser = $this->serializer->serialize($user, 'json', ["groups" => "userDetails"]);
+            $context = SerializationContext::create()->setGroups(["userDetails"]);
+            $jsonUser = $this->serializer->serialize($user, 'json', $context);
             return new JsonResponse($jsonUser, Response::HTTP_OK, [], true);
         } catch (Exception $exception) {
             return new JsonResponse($exception->getMessage(), $exception->getCode(), []);
