@@ -44,16 +44,22 @@ class UserService
 
     /**
      * @param array $userInformation
+     * @param User $manager
      * @return void
+     * @throws Exception
      */
-    public function createUser(array $userInformation): void
+    public function createUser(array $userInformation, User $manager): void
     {
+        if ($this->ensureEmailExist($userInformation["email"]))
+        {
+            throw new Exception("This email is already linked to an user, u should try with an other email", Response::HTTP_NOT_ACCEPTABLE);
+        }
         $newUser = new User();
-        $newUser->setUsername($userInformation["email"])
+        $newUser->setEmail($userInformation["email"])
             ->setPassword($userInformation["password"])
             ->setFirstName($userInformation["firstname"])
             ->setLastName($userInformation["lastname"])
-            ->setCustomer($userInformation["customer"]);
+            ->setCustomer($manager->getCustomer());
 
         $this->userRepository->add($newUser, true);
     }
@@ -70,5 +76,18 @@ class UserService
             throw new Exception("No content", Response::HTTP_NO_CONTENT);
         }
         $this->userRepository->remove($user, true);
+    }
+
+    /**
+     * @param string $email
+     * @return bool
+     */
+    public function ensureEmailExist(string $email): bool
+    {
+        $user = $this->userRepository->findOneBy(["email" => $email]);
+        if ($user === null) {
+            return false;
+        }
+        return true;
     }
 }
