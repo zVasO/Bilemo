@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\Customer;
 use App\Repository\CustomerRepository;
+use Doctrine\Common\Collections\Collection;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -39,5 +40,15 @@ class CustomerService
             throw new Exception("No content", Response::HTTP_NO_CONTENT);
         }
         return $customer;
+    }
+
+    /**
+     * @param int $id
+     * @return Collection
+     */
+    public function getAllUsersForACustomerById(int $id): Collection
+    {
+        $users = $this->customerRepository->find($id);
+        return $users->getUsers();
     }
 }

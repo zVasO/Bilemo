@@ -29,7 +29,7 @@ class ProductController extends AbstractController
     {
         try {
             $products = $this->productService->getAllProducts();
-            $context = SerializationContext::create()->setGroups(["productList"]);
+            $context = SerializationContext::create()->setGroups(["productList", "getProduct"]);
             $jsonProducts = $this->serializer->serialize($products, 'json', $context);
             return new JsonResponse($jsonProducts, Response::HTTP_OK, [], true);
         } catch (Exception $exception) {
@@ -42,7 +42,7 @@ class ProductController extends AbstractController
     {
         try {
             $product = $this->productService->getProductDetail($id);
-            $context = SerializationContext::create()->setGroups(["productDetails"]);
+            $context = SerializationContext::create()->setGroups(["productDetails", "getProduct"]);
             $jsonProduct = $this->serializer->serialize($product, 'json', $context);
             return new JsonResponse($jsonProduct, Response::HTTP_OK, [], true);
         } catch (Exception $exception) {

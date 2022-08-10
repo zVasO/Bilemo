@@ -27,7 +27,7 @@ class CustomerController extends AbstractController
     {
         try {
             $customers = $this->customerService->getAllCustomer();
-            $context = SerializationContext::create()->setGroups(["customerList"]);
+            $context = SerializationContext::create()->setGroups(["customerList", "getCustomer"]);
             $jsonCustomers = $this->serializer->serialize($customers, 'json', $context);
             return new JsonResponse($jsonCustomers, Response::HTTP_OK, [], true);
         } catch (Exception $exception) {
@@ -44,9 +44,22 @@ class CustomerController extends AbstractController
     {
         try {
             $customer = $this->customerService->getCustomerById($id);
-            $context = SerializationContext::create()->setGroups(["customerDetails"]);
+            $context = SerializationContext::create()->setGroups(["customerDetails", "getCustomer"]);
             $jsonCustomer = $this->serializer->serialize($customer, 'json', $context);
             return new JsonResponse($jsonCustomer, Response::HTTP_OK, [], true);
+        } catch (Exception $exception) {
+            return new JsonResponse($exception->getMessage(), $exception->getCode(), []);
+        }
+    }
+
+    #[Route('/api/customers/{idCustomer}/users/', name: 'customer_users', methods: ['GET'])]
+    public function getUserForSelectedCustomer(int $idCustomer): JsonResponse
+    {
+        try {
+            $users = $this->customerService->getAllUsersForACustomerById($idCustomer);
+            $context = SerializationContext::create()->setGroups(["userList", "getUser"]);
+            $jsonUsers = $this->serializer->serialize($users, 'json', $context);
+            return new JsonResponse($jsonUsers, Response::HTTP_OK, [], true);
         } catch (Exception $exception) {
             return new JsonResponse($exception->getMessage(), $exception->getCode(), []);
         }

@@ -27,7 +27,7 @@ class UserController extends AbstractController
     {
         try {
             $users = $this->userService->getAllUser();
-            $context = SerializationContext::create()->setGroups(["userList"]);
+            $context = SerializationContext::create()->setGroups(["userList", "getUser"]);
             $jsonUsers = $this->serializer->serialize($users, 'json', $context);
             return new JsonResponse($jsonUsers, Response::HTTP_OK, [], true);
         } catch (Exception $exception) {
@@ -40,7 +40,7 @@ class UserController extends AbstractController
     {
         try {
             $user = $this->userService->getUserDetail($id);
-            $context = SerializationContext::create()->setGroups(["userDetails"]);
+            $context = SerializationContext::create()->setGroups(["userDetails", "getUser"]);
             $jsonUser = $this->serializer->serialize($user, 'json', $context);
             return new JsonResponse($jsonUser, Response::HTTP_OK, [], true);
         } catch (Exception $exception) {
