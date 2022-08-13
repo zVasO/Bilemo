@@ -16,28 +16,18 @@ class ProductService
 
     /**
      * @return Product[]
-     * @throws Exception
      */
     public function getAllProducts(): array
     {
-        $productList = $this->productRepository->findAll();
-        if (empty($productList)) {
-            throw new Exception("No content", Response::HTTP_NO_CONTENT);
-        }
-        return $productList;
+        return $this->productRepository->findAll();
     }
 
     /**
      * @param int $id
-     * @return Product
-     * @throws Exception
+     * @return Product|null
      */
-    public function getProductDetail(int $id): Product
+    public function getProductDetail(int $id): ?Product
     {
-        $product = $this->productRepository->find($id);
-        if ($product === null) {
-            throw new Exception("No content", Response::HTTP_NO_CONTENT);
-        }
-        return $product;
+        return $this->productRepository->find($id);
     }
 }

@@ -73,7 +73,7 @@ class UserService
     {
         $user = $this->userRepository->find($id);
         if ($user === null) {
-            throw new Exception("No content", Response::HTTP_NO_CONTENT);
+            throw new Exception("No content", Response::HTTP_NOT_FOUND);
         }
         $this->userRepository->remove($user, true);
     }

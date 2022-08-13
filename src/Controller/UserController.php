@@ -13,6 +13,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use OpenApi\Annotations as OA;
 
 class UserController extends AbstractController
 {
@@ -22,6 +25,21 @@ class UserController extends AbstractController
     {
     }
 
+    /**
+     *   This method return the list of all users.
+     *
+     * @OA\Response(
+     *     response=200,
+     *     description="Return the list of all users",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=User::class, groups={"getUser"}))
+     *     )
+     * )
+     * @OA\Tag(name="User")
+     *
+     * @return JsonResponse
+     */
     #[Route('/api/users', name: 'users', methods: ['GET'])]
     public function getAllUser(): JsonResponse
     {
@@ -35,6 +53,21 @@ class UserController extends AbstractController
         }
     }
 
+    /**
+     *   This method return the detail of a user.
+     *
+     * @OA\Response(
+     *     response=200,
+     *     description="Return the detail of a user",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=User::class, groups={"getUser"}))
+     *     )
+     * )
+     * @OA\Tag(name="User")
+     * @param int $id
+     * @return JsonResponse
+     */
     #[Route('/api/users/{id}', name: 'detail_user', methods: ['GET'])]
     public function getDetailUser(int $id): JsonResponse
     {
@@ -48,6 +81,21 @@ class UserController extends AbstractController
         }
     }
 
+    /**
+     *   This method create a user.
+     *
+     * @OA\Response(
+     *     response=200,
+     *     description="Return create a user",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=User::class, groups={"getUser"}))
+     *     )
+     * )
+     * @OA\Tag(name="User")
+     * @param Request $request
+     * @return JsonResponse
+     */
     #[Route('/api/users', name: 'create_user', methods: ['POST'])]
     public function createUser(Request $request): JsonResponse
     {
@@ -65,6 +113,22 @@ class UserController extends AbstractController
        }
     }
 
+
+    /**
+     *   This method delete a user.
+     *
+     * @OA\Response(
+     *     response=200,
+     *     description="Return delete a user",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=User::class, groups={"getUser"}))
+     *     )
+     * )
+     * @OA\Tag(name="User")
+     * @param int $id
+     * @return JsonResponse
+     */
     #[Route('/api/users/{id}', name: 'delete_user', methods: ['DELETE'])]
     public function deleteUser(int $id): JsonResponse
     {
