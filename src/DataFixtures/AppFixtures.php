@@ -32,7 +32,7 @@ class AppFixtures extends Fixture
             ->setFirstName("Tom")
             ->setLastName("Cruise")
             ->setCustomer($customer)
-            ->setRoles(['ROLE_USER', 'ROLE_MANAGER']);
+            ->setRoles(['ROLE_USER', 'ROLE_ADMIN']);
         $manager->persist($firstUser);
 
 
