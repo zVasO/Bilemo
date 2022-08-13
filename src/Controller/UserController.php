@@ -73,6 +73,7 @@ class UserController extends AbstractController
     {
         try {
             $user = $this->userService->getUserDetail($id);
+            $this->denyAccessUnlessGranted('CAN_ACCESS', $user);
             $context = SerializationContext::create()->setGroups(["userDetails", "getUser"]);
             $jsonUser = $this->serializer->serialize($user, 'json', $context);
             return new JsonResponse($jsonUser, Response::HTTP_OK, [], true);

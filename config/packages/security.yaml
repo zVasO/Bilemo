@@ -42,7 +42,8 @@ security:
     access_control:
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/doc, roles: PUBLIC_ACCESS }
-        - { path: ^/api/customers, roles: ROLE_MANAGER }
+        - { path: ^/api/users, roles: ROLE_ADMIN,  methods: [POST] }
+        - { path: ^/api/users/, roles: ROLE_ADMIN,  methods: [DELETE] }
         - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
 
 when@test:

@@ -27,7 +27,7 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *          "delete_user",
  *          parameters = { "id" = "expr(object.getId())" },
  *      ),
- *      exclusion = @Hateoas\Exclusion(groups="getUser", excludeIf = "expr(not is_granted('ROLE_MANAGER'))"),
+ *      exclusion = @Hateoas\Exclusion(groups="getUser", excludeIf = "expr(not is_granted('ROLE_ADMIN'))"),
  * )
  *
  *  @Hateoas\Relation(
@@ -35,7 +35,7 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *      href = @Hateoas\Route(
  *          "create_user",
  *      ),
- *      exclusion = @Hateoas\Exclusion(groups="getUser", excludeIf = "expr(not is_granted('ROLE_MANAGER'))"),
+ *      exclusion = @Hateoas\Exclusion(groups="getUser", excludeIf = "expr(not is_granted('ROLE_ADMIN'))"),
  * )
  *
  */
