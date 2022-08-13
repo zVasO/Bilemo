@@ -6,6 +6,8 @@ use App\Service\ProductService;
 use Exception;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Annotations as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,6 +23,17 @@ class ProductController extends AbstractController
 
 
     /**
+     * This method return the list of all product.
+     *
+     * @OA\Response(
+     *     response=200,
+     *     description="Return the list of all product",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=Product::class, groups={"getProduct"}))
+     *     )
+     * )
+     * @OA\Tag(name="Products")
      * @return JsonResponse
      * @throws Exception
      */
@@ -37,16 +50,36 @@ class ProductController extends AbstractController
         }
     }
 
+
+    /**
+     *
+     * This method return the detail of a product.
+     *
+     * @OA\Response(
+     *     response=200,
+     *     description="Return the detail of product",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=Product::class, groups={"getProduct"}))
+     *     )
+     * )
+     * @OA\Tag(name="Products")
+     *
+     * @param int $id
+     * @return JsonResponse
+     */
     #[Route('/api/products/{id}', name: 'detail_product', methods: ['GET'])]
     public function getDetailUser(int $id): JsonResponse
     {
+        $product = $this->productService->getProductDetail($id);
+        if (null === $product) return new JsonResponse(null, Response::HTTP_NOT_FOUND);
+        //TODO create ExceptionSubscriber RuntimeException + celles qui en generent sauf JWT
         try {
-            $product = $this->productService->getProductDetail($id);
             $context = SerializationContext::create()->setGroups(["productDetails", "getProduct"]);
             $jsonProduct = $this->serializer->serialize($product, 'json', $context);
             return new JsonResponse($jsonProduct, Response::HTTP_OK, [], true);
         } catch (Exception $exception) {
-            return new JsonResponse(null, Response::HTTP_NOT_FOUND);
+            return new JsonResponse($exception->getMessage(), $exception->getCode());
         }
     }
 }
