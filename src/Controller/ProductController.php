@@ -38,14 +38,10 @@ class ProductController extends AbstractController
     #[Route('/api/products', name: 'products', methods: ['GET'])]
     public function getAllUser(): JsonResponse
     {
-        try {
-            $products = $this->productService->getAllProducts();
-            $context = SerializationContext::create()->setGroups(["productList", "getProduct"]);
-            $jsonProducts = $this->serializer->serialize($products, 'json', $context);
-            return new JsonResponse($jsonProducts, Response::HTTP_OK, [], true);
-        } catch (Exception $exception) {
-            return new JsonResponse($exception->getMessage(), $exception->getCode(), []);
-        }
+        $products = $this->productService->getAllProducts();
+        $context = SerializationContext::create()->setGroups(["productList", "getProduct"]);
+        $jsonProducts = $this->serializer->serialize($products, 'json', $context);
+        return new JsonResponse($jsonProducts, Response::HTTP_OK, [], true);
     }
 
 
@@ -74,12 +70,8 @@ class ProductController extends AbstractController
             return new JsonResponse(null, Response::HTTP_NOT_FOUND);
         }
         //TODO create ExceptionSubscriber RuntimeException + celles qui en generent sauf JWT
-        try {
-            $context = SerializationContext::create()->setGroups(["productDetails", "getProduct"]);
-            $jsonProduct = $this->serializer->serialize($product, 'json', $context);
-            return new JsonResponse($jsonProduct, Response::HTTP_OK, [], true);
-        } catch (Exception $exception) {
-            return new JsonResponse($exception->getMessage(), $exception->getCode());
-        }
+        $context = SerializationContext::create()->setGroups(["productDetails", "getProduct"]);
+        $jsonProduct = $this->serializer->serialize($product, 'json', $context);
+        return new JsonResponse($jsonProduct, Response::HTTP_OK, [], true);
     }
 }
