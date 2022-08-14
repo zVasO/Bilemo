@@ -22,29 +22,30 @@ class ExceptionListener
         // You get the exception object from the received event
         $exception = $event->getThrowable();
         // Get incoming request
-        $request   = $event->getRequest();
+        $request = $event->getRequest();
 
-        // Check if it is a rest api request
-        if ('application/json' === $request->headers->get('Content-Type'))
-        {
 
-            // Customize your response object to display the exception details
-            $response = new JsonResponse([
-                'message'       => $exception->getMessage(),
-                'code'          => $exception->getCode(),
+        // Customize your response object to display the exception details
+        $response = new JsonResponse();
+
+        // HttpExceptionInterface is a special type of exception that
+        // holds status code and header details
+        if ($exception instanceof HttpExceptionInterface) {
+            $response->setStatusCode($exception->getStatusCode());
+            $response->setData([
+                "code" => $exception->getStatusCode(),
+                "message" => $exception->getMessage(),
             ]);
-
-            // HttpExceptionInterface is a special type of exception that
-            // holds status code and header details
-            if ($exception instanceof HttpExceptionInterface) {
-                $response->setStatusCode($exception->getStatusCode());
-                $response->headers->replace($exception->getHeaders());
-            } else {
-                $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
-            }
-
-            // sends the modified response object to the event
-            $event->setResponse($response);
+            $response->headers->replace($exception->getHeaders());
+        } else {
+            $response->setData([
+                "code" => Response::HTTP_INTERNAL_SERVER_ERROR,
+                "message" => $exception->getMessage(),
+            ]);
+            $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+        $response->setEncodingOptions( $response->getEncodingOptions() | JSON_PRETTY_PRINT );
+        // sends the modified response object to the event
+        $event->setResponse($response);
     }
 }
