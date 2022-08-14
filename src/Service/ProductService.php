@@ -9,7 +9,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ProductService
 {
-
     public function __construct(private readonly ProductRepository $productRepository)
     {
     }

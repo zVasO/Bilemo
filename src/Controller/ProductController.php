@@ -15,8 +15,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ProductController extends AbstractController
 {
-
-
     public function __construct(private readonly ProductService $productService, private readonly SerializerInterface $serializer)
     {
     }
@@ -72,7 +70,9 @@ class ProductController extends AbstractController
     public function getDetailUser(int $id): JsonResponse
     {
         $product = $this->productService->getProductDetail($id);
-        if (null === $product) return new JsonResponse(null, Response::HTTP_NOT_FOUND);
+        if (null === $product) {
+            return new JsonResponse(null, Response::HTTP_NOT_FOUND);
+        }
         //TODO create ExceptionSubscriber RuntimeException + celles qui en generent sauf JWT
         try {
             $context = SerializationContext::create()->setGroups(["productDetails", "getProduct"]);

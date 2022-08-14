@@ -8,8 +8,6 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class PersonalAccessVoter extends Voter
 {
-
-
     private const ROLE_ADMIN = "ROLE_ADMIN";
     private const CAN_ACCESS = "CAN_ACCESS";
 

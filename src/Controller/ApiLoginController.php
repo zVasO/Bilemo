@@ -12,9 +12,6 @@ use OpenApi\Annotations as OA;
 
 class ApiLoginController extends AbstractController
 {
-
-
-
     #[Route('/api/login', name: 'app_api_login', methods: ["POST"])]
     public function index(): JsonResponse
     {

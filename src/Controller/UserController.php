@@ -19,8 +19,6 @@ use OpenApi\Annotations as OA;
 
 class UserController extends AbstractController
 {
-
-
     public function __construct(private readonly UserService $userService, private readonly  SerializerInterface $serializer)
     {
     }
@@ -100,18 +98,18 @@ class UserController extends AbstractController
     #[Route('/api/users', name: 'create_user', methods: ['POST'])]
     public function createUser(Request $request): JsonResponse
     {
-       try {
-           /** @var User $manager */
-           $manager = $this->getUser();
-           if (null !== $manager) {
-               $userInformation = json_decode($request->getContent(), true);
-               ValidatorService::validateCreateUserArray($userInformation);
-               $this->userService->createUser($userInformation, $manager);
-               return new JsonResponse("User correctly added", Response::HTTP_OK, []);
-           }
-       } catch (Exception $exception) {
-           return new JsonResponse($exception->getMessage(), $exception->getCode(), []);
-       }
+        try {
+            /** @var User $manager */
+            $manager = $this->getUser();
+            if (null !== $manager) {
+                $userInformation = json_decode($request->getContent(), true);
+                ValidatorService::validateCreateUserArray($userInformation);
+                $this->userService->createUser($userInformation, $manager);
+                return new JsonResponse("User correctly added", Response::HTTP_OK, []);
+            }
+        } catch (Exception $exception) {
+            return new JsonResponse($exception->getMessage(), $exception->getCode(), []);
+        }
     }
 
 
@@ -134,7 +132,7 @@ class UserController extends AbstractController
     public function deleteUser(int $id): JsonResponse
     {
         try {
-           $this->userService->deleteUser($id);
+            $this->userService->deleteUser($id);
             return new JsonResponse("User correctly deleted", Response::HTTP_OK, []);
         } catch (Exception $exception) {
             return new JsonResponse($exception->getMessage(), $exception->getCode(), []);
