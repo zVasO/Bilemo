@@ -9,8 +9,6 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Hateoas\Configuration\Annotation as Hateoas;
 
-
-
 /**
  * @Hateoas\Relation(
  *      "self",
@@ -44,7 +42,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column (unique: true)]
+    #[ORM\Column(unique: true)]
     #[Groups(["userList", "customerDetails"])]
     private ?int $id = null;
 
@@ -197,5 +195,4 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->Customer = $Customer;
         return $this;
     }
-
 }

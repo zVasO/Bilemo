@@ -9,7 +9,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class UserService
 {
-
     public function __construct(private readonly UserRepository $userRepository)
     {
     }
@@ -50,8 +49,7 @@ class UserService
      */
     public function createUser(array $userInformation, User $manager): void
     {
-        if ($this->ensureEmailExist($userInformation["email"]))
-        {
+        if ($this->ensureEmailExist($userInformation["email"])) {
             throw new Exception("This email is already linked to an user, u should try with an other email", Response::HTTP_NOT_ACCEPTABLE);
         }
         $newUser = new User();
