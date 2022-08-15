@@ -10,15 +10,18 @@ use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class UserController extends AbstractController
 {
-    public function __construct(private readonly UserService $userService, private readonly SerializerInterface $serializer)
+    public function __construct(private readonly UserService $userService, private readonly SerializerInterface $serializer, private readonly TagAwareCacheInterface $cache)
     {
     }
 
@@ -37,15 +40,24 @@ class UserController extends AbstractController
      *
      * @return JsonResponse
      * @throws Exception
+     * @throws InvalidArgumentException
      */
     #[Route('/api/users', name: 'users', methods: ['GET'])]
     public function getAllUser(): JsonResponse
     {
         /** @var User $admin */
         $admin = $this->getUser();
-        $users = $this->userService->getAllUserOfTheSameCustomer($admin);
-        $context = SerializationContext::create()->setGroups(["userList", "getUser"]);
-        $jsonUsers = $this->serializer->serialize($users, 'json', $context);
+        $userService = $this->userService;
+
+        $idCache = "getAllUsers";
+        $jsonUsers = $this->cache->get($idCache, function (ItemInterface $item) use ($userService, $admin) {
+            $item->tag("usersCache");
+            $users = $userService->getAllUserOfTheSameCustomer($admin);
+            $context = SerializationContext::create()->setGroups(["userList", "getUser"]);
+            return $this->serializer->serialize($users, 'json', $context);
+        });
+
+
         return new JsonResponse($jsonUsers, Response::HTTP_OK, [], true);
     }
 
@@ -70,16 +82,25 @@ class UserController extends AbstractController
      * @param int $id
      * @return JsonResponse
      * @throws Exception
+     * @throws InvalidArgumentException
      */
     #[
         Route('/api/users/{id}', name: 'detail_user', methods: ['GET'])]
     public function getDetailUser(int $id): JsonResponse
     {
-        $user = $this->userService->getUserDetail($id);
-        if (empty($user)) return new JsonResponse(null, Response::HTTP_NO_CONTENT);
-        $this->denyAccessUnlessGranted('CAN_ACCESS', $user);
-        $context = SerializationContext::create()->setGroups(["userDetails", "getUser"]);
-        $jsonUser = $this->serializer->serialize($user, 'json', $context);
+        $idCache = "getDetailsUser" . $id;
+        $userService = $this->userService;
+
+        $jsonUser = $this->cache->get($idCache, function (ItemInterface $item) use ($userService, $id) {
+            echo "Pas encore en cache";
+            $item->tag("usersCache");
+            $user = $userService->getUserDetail($id);
+            if (empty($user)) return new JsonResponse("This user dont exists", Response::HTTP_NOT_FOUND);
+            $this->denyAccessUnlessGranted('CAN_ACCESS', $user);
+            $context = SerializationContext::create()->setGroups(["userDetails", "getUser"]);
+            return $this->serializer->serialize($user, 'json', $context);
+        });
+
         return new JsonResponse($jsonUser, Response::HTTP_OK, [], true);
     }
 
@@ -111,7 +132,7 @@ class UserController extends AbstractController
      *                   type="string",
      *                   example="Dupont"
      *               ),
- *                  @OA\Property(
+     *                  @OA\Property(
      *                   property="email",
      *                   description="email",
      *                   type="string",
@@ -130,6 +151,7 @@ class UserController extends AbstractController
      * @param Request $request
      * @return JsonResponse
      * @throws Exception
+     * @throws InvalidArgumentException
      */
     #[Route('/api/users', name: 'create_user', methods: ['POST'])]
     public function createUser(Request $request): JsonResponse
@@ -146,6 +168,7 @@ class UserController extends AbstractController
             }
 
             $this->userService->createUser($userInformation, $manager);
+            $this->cache->invalidateTags(["usersCache"]);
             return new JsonResponse("User correctly added", Response::HTTP_CREATED, []);
         }
     }
@@ -172,11 +195,13 @@ class UserController extends AbstractController
      * @param int $id
      * @return JsonResponse
      * @throws Exception
+     * @throws InvalidArgumentException
      */
     #[Route('/api/users/{id}', name: 'delete_user', methods: ['DELETE'])]
     public function deleteUser(int $id): JsonResponse
     {
         $this->userService->deleteUser($id);
+        $this->cache->invalidateTags(["usersCache"]);
         return new JsonResponse("User correctly deleted", Response::HTTP_OK, []);
     }
 }

@@ -64,7 +64,7 @@ class PersonalAccessVoter extends Voter
      */
     private function canUserAccess(User $userConnected, User $user): bool
     {
-        if (in_array(self::ROLE_ADMIN, $userConnected->getRoles())) {
+        if (in_array(self::ROLE_ADMIN, $userConnected->getRoles()) && $userConnected->getCustomer() === $user->getCustomer()) {
             return true;
         } else {
             return $userConnected->getId() === $user->getId();
