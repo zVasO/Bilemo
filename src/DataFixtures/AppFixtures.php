@@ -24,6 +24,11 @@ class AppFixtures extends Fixture
             ->setFullAddress("3 rue du test 01100 Oyonnax");
         $manager->persist($customer);
 
+        $secondCustomer = new Customer();
+        $secondCustomer->setEmail("admin@orange.fr")
+            ->setFullAddress("3 rue du test 01100 Veyziat");
+        $manager->persist($secondCustomer);
+
         $firstUser = new User();
         $firstUser->setEmail("dev.dyger@gmail.com")
             ->setPassword($this->passwordHasher->hashPassword($firstUser, "motdepasse"))
@@ -35,13 +40,22 @@ class AppFixtures extends Fixture
 
 
         $secondUser = new User();
-        $secondUser->setEmail("defv.dyger@gmail.com")
+        $secondUser->setEmail("dylan.user@gmail.com")
             ->setPassword($this->passwordHasher->hashPassword($secondUser, "motdepasse"))
             ->setFirstName("Test")
             ->setLastName("Second")
             ->setCustomer($customer)
             ->setRoles(['ROLE_USER']);
         $manager->persist($secondUser);
+
+        $thirdUser = new User();
+        $thirdUser->setEmail("admin.orange@gmail.com")
+            ->setPassword($this->passwordHasher->hashPassword($secondUser, "motdepasse"))
+            ->setFirstName("Admin")
+            ->setLastName("Orange")
+            ->setCustomer($secondCustomer)
+            ->setRoles(['ROLE_USER', 'ROLE_ADMIN']);
+        $manager->persist($thirdUser);
 
 
         $firstProduct = new Product();
