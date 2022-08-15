@@ -98,7 +98,6 @@ class ProductController extends AbstractController
 
         });
 
-        //TODO create ExceptionSubscriber RuntimeException + celles qui en generent sauf JWT
         return new JsonResponse($jsonProduct, Response::HTTP_OK, [], true);
     }
 }
