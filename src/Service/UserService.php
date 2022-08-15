@@ -15,30 +15,23 @@ class UserService
 
 
     /**
+     * return all users of the same customer (customer of logged user)
      * @return User[]
      * @throws Exception
      */
-    public function getAllUser(): array
+    public function getAllUserOfTheSameCustomer(User $connectedUser): array
     {
-        $usersList = $this->userRepository->findAll();
-        if (empty($usersList)) {
-            throw new Exception("No content", Response::HTTP_NO_CONTENT);
-        }
-        return $usersList;
+        $customer = $connectedUser->getCustomer();
+        return $customer->getUsers()->toArray();
     }
 
     /**
      * @param int $id
-     * @return User
-     * @throws Exception
+     * @return User|null
      */
-    public function getUserDetail(int $id): User
+    public function getUserDetail(int $id): ?User
     {
-        $user = $this->userRepository->find($id);
-        if ($user === null) {
-            throw new Exception("No content", Response::HTTP_NO_CONTENT);
-        }
-        return $user;
+        return $this->userRepository->find($id);
     }
 
     /**
@@ -49,15 +42,13 @@ class UserService
      */
     public function createUser(array $userInformation, User $manager): void
     {
-        if ($this->ensureEmailExist($userInformation["email"])) {
-            throw new Exception("This email is already linked to an user, u should try with an other email", Response::HTTP_NOT_ACCEPTABLE);
-        }
         $newUser = new User();
         $newUser->setEmail($userInformation["email"])
             ->setPassword($userInformation["password"])
             ->setFirstName($userInformation["firstname"])
             ->setLastName($userInformation["lastname"])
-            ->setCustomer($manager->getCustomer());
+            ->setCustomer($manager->getCustomer())
+            ->setRoles(["ROLE_USER"]);
 
         $this->userRepository->add($newUser, true);
     }

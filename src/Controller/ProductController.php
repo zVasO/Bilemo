@@ -12,6 +12,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Entity\Product;
 
 class ProductController extends AbstractController
 {
@@ -28,7 +29,7 @@ class ProductController extends AbstractController
      *     description="Return the list of all product",
      *     @OA\JsonContent(
      *        type="array",
-     *        @OA\Items(ref=@Model(type=Product::class, groups={"getProduct"}))
+     *        @OA\Items(ref=@Model(type=Product::class, groups={"productList", "getProduct"}))
      *     )
      * )
      * @OA\Tag(name="Products")
@@ -54,8 +55,15 @@ class ProductController extends AbstractController
      *     description="Return the detail of product",
      *     @OA\JsonContent(
      *        type="array",
-     *        @OA\Items(ref=@Model(type=Product::class, groups={"getProduct"}))
+     *        @OA\Items(ref=@Model(type=Product::class, groups={"productDetails", "getProduct"}))
      *     )
+     * )
+     *
+     * @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     description="The identifiant of a product",
+     *     @OA\Schema(type="int")
      * )
      * @OA\Tag(name="Products")
      *
