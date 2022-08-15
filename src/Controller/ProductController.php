@@ -13,10 +13,12 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Product;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class ProductController extends AbstractController
 {
-    public function __construct(private readonly ProductService $productService, private readonly SerializerInterface $serializer)
+    public function __construct(private readonly ProductService $productService, private readonly SerializerInterface $serializer, private readonly TagAwareCacheInterface $cache)
     {
     }
 
@@ -39,9 +41,17 @@ class ProductController extends AbstractController
     #[Route('/api/products', name: 'products', methods: ['GET'])]
     public function getAllUser(): JsonResponse
     {
-        $products = $this->productService->getAllProducts();
-        $context = SerializationContext::create()->setGroups(["productList", "getProduct"]);
-        $jsonProducts = $this->serializer->serialize($products, 'json', $context);
+        $idCache = "getAllProducts";
+        $productService = $this->productService;
+
+        $jsonProducts = $this->cache->get($idCache, function (ItemInterface $item) use ($productService) {
+            $item->tag("productsCache");
+            echo("Pas en cache");
+            $products = $productService->getAllProducts();
+            $context = SerializationContext::create()->setGroups(["productList", "getProduct"]);
+            return $this->serializer->serialize($products, 'json', $context);
+        });
+
         return new JsonResponse($jsonProducts, Response::HTTP_OK, [], true);
     }
 
@@ -73,13 +83,22 @@ class ProductController extends AbstractController
     #[Route('/api/products/{id}', name: 'detail_product', methods: ['GET'])]
     public function getDetailUser(int $id): JsonResponse
     {
-        $product = $this->productService->getProductDetail($id);
-        if (null === $product) {
-            return new JsonResponse(null, Response::HTTP_NOT_FOUND);
-        }
+        $idCache = "getProductDetails".$id;
+        $productService = $this->productService;
+
+        $jsonProduct = $this->cache->get($idCache, function (ItemInterface $item) use ($productService,$id) {
+            $item->tag("productsCache");
+            echo("Pas en cache");
+            $product = $this->productService->getProductDetail($id);
+            if (null === $product) {
+                return new JsonResponse(null, Response::HTTP_NOT_FOUND);
+            }
+            $context = SerializationContext::create()->setGroups(["productDetails", "getProduct"]);
+            return $this->serializer->serialize($product, 'json', $context);
+
+        });
+
         //TODO create ExceptionSubscriber RuntimeException + celles qui en generent sauf JWT
-        $context = SerializationContext::create()->setGroups(["productDetails", "getProduct"]);
-        $jsonProduct = $this->serializer->serialize($product, 'json', $context);
         return new JsonResponse($jsonProduct, Response::HTTP_OK, [], true);
     }
 }
