@@ -8,6 +8,7 @@ use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,12 +32,12 @@ class ProductController extends AbstractController
      *     description="Return the list of all product",
      *     @OA\JsonContent(
      *        type="array",
-     *        @OA\Items(ref=@Model(type=Product::class, groups={"productList", "getProduct"}))
+     *        @OA\Items(ref=@Model(type=Product::class, groups={"productDetails"}))
      *     )
      * )
      * @OA\Tag(name="Products")
      * @return JsonResponse
-     * @throws Exception
+     * @throws InvalidArgumentException
      */
     #[Route('/api/products', name: 'products', methods: ['GET'])]
     public function getAllUser(): JsonResponse
@@ -65,7 +66,7 @@ class ProductController extends AbstractController
      *     description="Return the detail of product",
      *     @OA\JsonContent(
      *        type="array",
-     *        @OA\Items(ref=@Model(type=Product::class, groups={"productDetails", "getProduct"}))
+     *        @OA\Items(ref=@Model(type=Product::class, groups={"productDetails"}))
      *     )
      * )
      *
@@ -79,6 +80,7 @@ class ProductController extends AbstractController
      *
      * @param int $id
      * @return JsonResponse
+     * @throws InvalidArgumentException
      */
     #[Route('/api/products/{id}', name: 'detail_product', methods: ['GET'])]
     public function getDetailUser(int $id): JsonResponse

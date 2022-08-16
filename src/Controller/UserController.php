@@ -33,7 +33,7 @@ class UserController extends AbstractController
      *     description="Return the list of all users",
      *     @OA\JsonContent(
      *        type="array",
-     *        @OA\Items(ref=@Model(type=User::class, groups={"userList", "getUser"}))
+     *        @OA\Items(ref=@Model(type=User::class, groups={"userDetails"}))
      *     )
      * )
      * @OA\Tag(name="User")
@@ -69,7 +69,7 @@ class UserController extends AbstractController
      *     description="Return the detail of a user",
      *     @OA\JsonContent(
      *        type="array",
-     *        @OA\Items(ref=@Model(type=User::class, groups={"userDetails", "getUser"}))
+     *        @OA\Items(ref=@Model(type=User::class, groups={"userDetails"}))
      *     )
      * )
      * @OA\Parameter(
