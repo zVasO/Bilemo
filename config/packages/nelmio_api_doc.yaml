@@ -1,6 +1,10 @@
 # config\packages\nelmio_api_doc.yaml
 
 nelmio_api_doc:
+    models:
+        names:
+            - { alias: Product, type: App\Entity\Product, groups: [productList]}
+            - { alias: ProductDetail, type: App\Entity\Product, groups: [productDetails]}
     documentation:
         info:
             title: Bilemo
