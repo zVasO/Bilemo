@@ -48,12 +48,12 @@ nelmio_api_doc:
                             type: string
                             default: motdepasse
             securitySchemes:
-                bearerAuth:
-                    type: apiKey
-                    in: header
-                    name: Authorization # or another header name
+                Bearer:
+                    type: http
+                    scheme: bearer
+                    bearerFormat: JWT
         security:
-            - bearerAuth: []
+            - Bearer: []
     areas: # to filter documented areas
         path_patterns:
             - ^/api(?!/doc$) # Accepts routes under /api except /api/doc

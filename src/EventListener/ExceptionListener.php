@@ -2,10 +2,13 @@
 
 namespace App\EventListener;
 
+use App\Exception\BilemoException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use TypeError;
+use Webmozart\Assert\InvalidArgumentException;
 
 class ExceptionListener
 {
@@ -23,8 +26,6 @@ class ExceptionListener
         $exception = $event->getThrowable();
         // Get incoming request
         $request = $event->getRequest();
-
-
         // Customize your response object to display the exception details
         $response = new JsonResponse();
 
@@ -37,10 +38,22 @@ class ExceptionListener
                 "message" => $exception->getMessage(),
             ]);
             $response->headers->replace($exception->getHeaders());
+        } elseif ($exception instanceof BilemoException) {
+            $response->setStatusCode($exception->getCode());
+            $response->setData([
+                "code" => $exception->getCode(),
+                "message" => $exception->getMessage(),
+            ]);
+        } elseif ($exception instanceof TypeError || $exception instanceof InvalidArgumentException) {
+            $response->setStatusCode(Response::HTTP_BAD_REQUEST);
+            $response->setData([
+                "code" => Response::HTTP_BAD_REQUEST,
+                "message" => "Error with your parameters, please verify them !",
+            ]);
         } else {
             $response->setData([
                 "code" => Response::HTTP_INTERNAL_SERVER_ERROR,
-                "message" => $exception->getMessage(),
+                "message" => "Internal error",
             ]);
             $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
         }
