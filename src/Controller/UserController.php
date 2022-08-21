@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Exception\BilemoException;
 use App\Service\UserService;
 use App\Service\ValidatorService;
 use Exception;
@@ -18,6 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
+use Webmozart\Assert\Assert;
 
 class UserController extends AbstractController
 {
@@ -33,7 +35,7 @@ class UserController extends AbstractController
      *     description="Return the list of all users",
      *     @OA\JsonContent(
      *        type="array",
-     *        @OA\Items(ref=@Model(type=User::class, groups={"userList", "getUser"}))
+     *        @OA\Items(ref=@Model(type=User::class, groups={"userDetails"}))
      *     )
      * )
      * @OA\Tag(name="User")
@@ -69,14 +71,14 @@ class UserController extends AbstractController
      *     description="Return the detail of a user",
      *     @OA\JsonContent(
      *        type="array",
-     *        @OA\Items(ref=@Model(type=User::class, groups={"userDetails", "getUser"}))
+     *        @OA\Items(ref=@Model(type=User::class, groups={"userDetails"}))
      *     )
      * )
      * @OA\Parameter(
      *     name="id",
      *     in="path",
      *     description="The identifiant of a user",
-     *     @OA\Schema(type="int")
+     *     @OA\Schema(type="integer")
      * )
      * @OA\Tag(name="User")
      * @param int $id
@@ -85,9 +87,11 @@ class UserController extends AbstractController
      * @throws InvalidArgumentException
      */
     #[
-        Route('/api/users/{id}', name: 'detail_user', methods: ['GET'])]
+        Route('/api/users/{id}', name: 'detail_user', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function getDetailUser(int $id): JsonResponse
     {
+        Assert::integer($id, "The product Id must be an integer !");
+
         $idCache = "getDetailsUser" . $id;
         $userService = $this->userService;
 
@@ -95,7 +99,7 @@ class UserController extends AbstractController
             echo "Pas encore en cache";
             $item->tag("usersCache");
             $user = $userService->getUserDetail($id);
-            if (empty($user)) return new JsonResponse("This user dont exists", Response::HTTP_NOT_FOUND);
+            if (empty($user)) throw new BilemoException("This user dont exists", Response::HTTP_NOT_FOUND);
             $this->denyAccessUnlessGranted('CAN_ACCESS', $user);
             $context = SerializationContext::create()->setGroups(["userDetails", "getUser"]);
             return $this->serializer->serialize($user, 'json', $context);
@@ -164,7 +168,7 @@ class UserController extends AbstractController
             ValidatorService::validateCreateUserArray($userInformation);
 
             if ($this->userService->ensureEmailExist($userInformation["email"])) {
-                throw new Exception("This email is already linked to an user, you should try with an other email", Response::HTTP_NOT_ACCEPTABLE);
+                throw new BilemoException("This email is already linked to an user, you should try with an other email", Response::HTTP_NOT_ACCEPTABLE);
             }
 
             $this->userService->createUser($userInformation, $manager);
@@ -200,6 +204,8 @@ class UserController extends AbstractController
     #[Route('/api/users/{id}', name: 'delete_user', methods: ['DELETE'])]
     public function deleteUser(int $id): JsonResponse
     {
+        Assert::integer($id, "The product Id must be an integer !");
+
         $this->userService->deleteUser($id);
         $this->cache->invalidateTags(["usersCache"]);
         return new JsonResponse("User correctly deleted", Response::HTTP_OK, []);
