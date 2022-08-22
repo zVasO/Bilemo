@@ -30,7 +30,7 @@ class AppFixtures extends Fixture
         $manager->persist($secondCustomer);
 
         $firstUser = new User();
-        $firstUser->setEmail("dev.dyger@gmail.com")
+        $firstUser->setEmail("admin@bilemo.com")
             ->setPassword($this->passwordHasher->hashPassword($firstUser, "motdepasse"))
             ->setFirstName("Tom")
             ->setLastName("Cruise")
@@ -40,7 +40,7 @@ class AppFixtures extends Fixture
 
 
         $secondUser = new User();
-        $secondUser->setEmail("dylan.user@gmail.com")
+        $secondUser->setEmail("user@bilemo.com")
             ->setPassword($this->passwordHasher->hashPassword($secondUser, "motdepasse"))
             ->setFirstName("Test")
             ->setLastName("Second")
@@ -49,7 +49,7 @@ class AppFixtures extends Fixture
         $manager->persist($secondUser);
 
         $thirdUser = new User();
-        $thirdUser->setEmail("admin.orange@gmail.com")
+        $thirdUser->setEmail("admin2@bilemo.com")
             ->setPassword($this->passwordHasher->hashPassword($secondUser, "motdepasse"))
             ->setFirstName("Admin")
             ->setLastName("Orange")
