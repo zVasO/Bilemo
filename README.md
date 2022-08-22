@@ -19,7 +19,7 @@ Install the dependencies
 ```sh
 composer install
 ```
-Create you own database "bilemo" and edit the .env file.
+Create your own database "bilemo" and edit the .env file.
 Update your database schema 
 ```bash
 php bin/console doctrine:migrations:migrate
