@@ -2,19 +2,22 @@
 
 namespace App\Controller;
 
+use App\Entity\Product;
+use App\Exception\BilemoException;
 use App\Service\ProductService;
 use Exception;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Entity\Product;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
+use Webmozart\Assert\Assert;
 
 class ProductController extends AbstractController
 {
@@ -31,7 +34,7 @@ class ProductController extends AbstractController
      *     description="Return the list of all product",
      *     @OA\JsonContent(
      *        type="array",
-     *        @OA\Items(ref=@Model(type=Product::class, groups={"productList", "getProduct"}))
+     *        @OA\Items(ref=@Model(type=Product::class, groups={"productList"}))
      *     )
      * )
      * @OA\Tag(name="Products")
@@ -65,7 +68,7 @@ class ProductController extends AbstractController
      *     description="Return the detail of product",
      *     @OA\JsonContent(
      *        type="array",
-     *        @OA\Items(ref=@Model(type=Product::class, groups={"productDetails", "getProduct"}))
+     *        @OA\Items(ref=@Model(type=Product::class, groups={"productDetails"}))
      *     )
      * )
      *
@@ -73,25 +76,27 @@ class ProductController extends AbstractController
      *     name="id",
      *     in="path",
      *     description="The identifiant of a product",
-     *     @OA\Schema(type="int")
+     *     @OA\Schema(type="integer")
      * )
      * @OA\Tag(name="Products")
      *
      * @param int $id
      * @return JsonResponse
+     * @throws InvalidArgumentException
      */
     #[Route('/api/products/{id}', name: 'detail_product', methods: ['GET'])]
     public function getDetailUser(int $id): JsonResponse
     {
-        $idCache = "getProductDetails".$id;
+        Assert::integer($id, "The product Id must be an integer !");
+
+        $idCache = "getProductDetails" . $id;
         $productService = $this->productService;
 
-        $jsonProduct = $this->cache->get($idCache, function (ItemInterface $item) use ($productService,$id) {
+        $jsonProduct = $this->cache->get($idCache, function (ItemInterface $item) use ($productService, $id) {
             $item->tag("productsCache");
-            echo("Pas en cache");
             $product = $this->productService->getProductDetail($id);
             if (null === $product) {
-                return new JsonResponse(null, Response::HTTP_NOT_FOUND);
+                throw new BilemoException("Content not found", Response::HTTP_NOT_FOUND);
             }
             $context = SerializationContext::create()->setGroups(["productDetails", "getProduct"]);
             return $this->serializer->serialize($product, 'json', $context);

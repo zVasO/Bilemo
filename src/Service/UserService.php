@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\User;
+use App\Exception\BilemoException;
 use App\Repository\UserRepository;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
@@ -62,7 +63,7 @@ class UserService
     {
         $user = $this->userRepository->find($id);
         if ($user === null) {
-            throw new Exception("No content", Response::HTTP_NOT_FOUND);
+            throw new BilemoException("No content", Response::HTTP_NOT_FOUND);
         }
         $this->userRepository->remove($user, true);
     }
